@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Schizophrenia Symptom Prediction</title>
+		<link
+			href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+			rel="stylesheet" />
+		<link
+			href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+			rel="stylesheet" />
+		<link
+			href="{{ url_for('static', filename='style.css') }}"
+			rel="stylesheet" />
+		<style>
+			body {
+				background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+				min-height: 100vh;
+				font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+			}
+
+			.container {
+				max-width: 800px;
+				margin: 0 auto;
+				padding: 20px;
+			}
+
+			.card {
+				border-radius: 15px;
+				box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+				border: none;
+				background: rgba(255, 255, 255, 0.95);
+				backdrop-filter: blur(10px);
+			}
+
+			.card-header {
+				background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+				color: white;
+				border-radius: 10px 10px 0 0 !important;
+				padding: 20px;
+			}
+
+			.form-control,
+			.form-select {
+				border-radius: 10px;
+				border: 2px solid #e9ecef;
+				transition: all 0.3s ease;
+			}
+
+			.form-control:focus,
+			.form-select:focus {
+				border-color: #667eea;
+				box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+			}
+
+			.btn-predict {
+				background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+				border: none;
+				border-radius: 10px;
+				padding: 12px 30px;
+				font-weight: 600;
+				transition: all 0.3s ease;
+			}
+
+			.btn-predict:hover {
+				transform: translateY(-2px);
+				box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+			}
+
+			.result-card {
+				margin-top: 20px;
+				border-radius: 15px;
+				border: none;
+				box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+			}
+
+			.progress {
+				height: 25px;
+				border-radius: 12px;
+				background-color: #f8f9fa;
+			}
+
+			.progress-bar {
+				border-radius: 12px;
+			}
+
+			.feature-info {
+				font-size: 0.9em;
+				color: #666;
+				margin-top: 5px;
+			}
+
+			.loading {
+				display: none;
+			}
+
+			.spinner-border {
+				width: 1rem;
+				height: 1rem;
+			}
+
+			.navbar {
+				background: rgba(255, 255, 255, 0.1) !important;
+				backdrop-filter: blur(10px);
+			}
+
+			.navbar-brand,
+			.nav-link {
+				color: white !important;
+			}
+
+			.prediction-result {
+				padding: 20px;
+				border-radius: 15px;
+				margin-top: 20px;
+			}
+
+			.high-risk {
+				background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+				color: white;
+			}
+
+			.moderate-risk {
+				background: linear-gradient(135deg, #feca57, #ff9ff3);
+				color: white;
+			}
+
+			.low-risk {
+				background: linear-gradient(135deg, #48dbfb, #0abde3);
+				color: white;
+			}
+
+			.elevated-risk {
+				background: linear-gradient(135deg, #ff9ff3, #feca57);
+				color: white;
+			}
+
+			.minimal-risk {
+				background: linear-gradient(135deg, #1dd1a1, #55a3ff);
+				color: white;
+			}
+		</style>
+	</head>
+	<body>
+		<nav class="navbar navbar-expand-lg navbar-dark">
+			<div class="container">
+				<a class="navbar-brand" href="/">
+					<i class="fas fa-brain me-2"></i>
+					Schizophrenia Prediction
+				</a>
+				<div class="navbar-nav ms-auto">
+					<a class="nav-link" href="/about">About</a>
+				</div>
+			</div>
+		</nav>
+
+		<div class="container mt-4">
+			<div class="card">
+				<div class="card-header text-center">
+					<h2>
+						<i class="fas fa-stethoscope me-2"></i>Schizophrenia Symptom
+						Assessment
+					</h2>
+					<p class="mb-0">
+						Enter patient information to predict schizophrenia proneness using
+						SVM model
+					</p>
+				</div>
+				<div class="card-body p-4">
+					<form id="predictionForm">
+						<div class="row">
+							<div class="col-md-6 mb-3">
+								<label for="age" class="form-label">
+									<i class="fas fa-calendar-alt me-1"></i>Age
+								</label>
+								<input
+									type="number"
+									class="form-control"
+									id="age"
+									name="age"
+									min="50"
+									max="100"
+									step="1"
+									required />
+								<div class="feature-info">
+									Age of the patient (50-100 years)
+								</div>
+							</div>
+
+							<div class="col-md-6 mb-3">
+								<label for="gender" class="form-label">
+									<i class="fas fa-venus-mars me-1"></i>Gender
+								</label>
+								<select class="form-select" id="gender" name="gender" required>
+									<option value="">Select Gender</option>
+									<option value="0">Female</option>
+									<option value="1">Male</option>
+								</select>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col-md-6 mb-3">
+								<label for="marital_status" class="form-label">
+									<i class="fas fa-heart me-1"></i>Marital Status
+								</label>
+								<select
+									class="form-select"
+									id="marital_status"
+									name="marital_status"
+									required>
+									<option value="">Select Status</option>
+									<option value="0">Divorced</option>
+									<option value="1">Married</option>
+									<option value="2">Single</option>
+									<option value="3">Widowed</option>
+								</select>
+							</div>
+
+							<div class="col-md-6 mb-3">
+								<label for="fatigue" class="form-label">
+									<i class="fas fa-tired me-1"></i>Fatigue Level
+								</label>
+								<input
+									type="number"
+									class="form-control"
+									id="fatigue"
+									name="fatigue"
+									min="-1"
+									max="1"
+									step="0.01"
+									required />
+								<div class="feature-info">Fatigue severity (-1 to 1)</div>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col-md-6 mb-3">
+								<label for="slowing" class="form-label">
+									<i class="fas fa-hourglass-half me-1"></i>Slowing
+								</label>
+								<input
+									type="number"
+									class="form-control"
+									id="slowing"
+									name="slowing"
+									min="-1"
+									max="1"
+									step="0.01"
+									required />
+								<div class="feature-info">Psychomotor slowing (-1 to 1)</div>
+							</div>
+
+							<div class="col-md-6 mb-3">
+								<label for="pain" class="form-label">
+									<i class="fas fa-exclamation-triangle me-1"></i>Pain Level
+								</label>
+								<input
+									type="number"
+									class="form-control"
+									id="pain"
+									name="pain"
+									min="-1"
+									max="1"
+									step="0.01"
+									required />
+								<div class="feature-info">Pain intensity (-1 to 1)</div>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col-md-6 mb-3">
+								<label for="hygiene" class="form-label">
+									<i class="fas fa-shower me-1"></i>Hygiene Level
+								</label>
+								<input
+									type="number"
+									class="form-control"
+									id="hygiene"
+									name="hygiene"
+									min="-1"
+									max="1"
+									step="0.01"
+									required />
+								<div class="feature-info">Personal hygiene score (-1 to 1)</div>
+							</div>
+
+							<div class="col-md-6 mb-3">
+								<label for="movement" class="form-label">
+									<i class="fas fa-running me-1"></i>Movement
+								</label>
+								<input
+									type="number"
+									class="form-control"
+									id="movement"
+									name="movement"
+									min="-1"
+									max="1"
+									step="0.01"
+									required />
+								<div class="feature-info">Movement abnormalities (-1 to 1)</div>
+							</div>
+						</div>
+
+						<div class="text-center mt-4">
+							<button type="submit" class="btn btn-primary btn-predict">
+								<span class="loading">
+									<span class="spinner-border me-2" role="status"></span>
+								</span>
+								<span class="btn-text">
+									<i class="fas fa-brain me-2"></i>Predict Schizophrenia Risk
+								</span>
+							</button>
+						</div>
+					</form>
+				</div>
+			</div>
+
+			<div id="results" style="display: none">
+				<div class="card result-card">
+					<div class="card-body">
+						<h4 class="card-title">
+							<i class="fas fa-chart-line me-2"></i>Prediction Results
+						</h4>
+						<div class="text-end mb-3">
+							<button
+								class="btn btn-sm btn-outline-primary me-2"
+								onclick="copyResultsToClipboard()"
+								title="Copy results to clipboard">
+								<i class="fas fa-copy me-1"></i>Copy Results
+							</button>
+							<button
+								class="btn btn-sm btn-outline-secondary"
+								onclick="predictionApp.resetForm()"
+								title="Reset form">
+								<i class="fas fa-redo me-1"></i>New Prediction
+							</button>
+						</div>
+						<div id="prediction-result"></div>
+						<div id="probabilities-result" class="mt-4"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+		<script src="{{ url_for('static', filename='script.js') }}"></script>
+		<script>
+			document
+				.getElementById("predictionForm")
+				.addEventListener("submit", async function (e) {
+					e.preventDefault();
+
+					const submitBtn = this.querySelector('button[type="submit"]');
+					const loading = submitBtn.querySelector(".loading");
+					const btnText = submitBtn.querySelector(".btn-text");
+
+					// Show loading state
+					loading.style.display = "inline";
+					btnText.style.display = "none";
+					submitBtn.disabled = true;
+
+					// Hide previous results
+					document.getElementById("results").style.display = "none";
+
+					try {
+						const formData = new FormData(this);
+
+						const response = await fetch("/predict", {
+							method: "POST",
+							body: formData
+						});
+
+						const data = await response.json();
+
+						if (data.success) {
+							showResults(data.prediction, data.probabilities);
+						} else {
+							showError(data.error);
+						}
+					} catch (error) {
+						showError("Network error occurred. Please try again.");
+					}
+
+					// Hide loading state
+					loading.style.display = "none";
+					btnText.style.display = "inline";
+					submitBtn.disabled = false;
+				});
+
+			function showResults(prediction, probabilities) {
+				const resultsDiv = document.getElementById("results");
+				const predictionDiv = document.getElementById("prediction-result");
+				const probabilitiesDiv = document.getElementById(
+					"probabilities-result"
+				);
+
+				// Show prediction
+				let riskClass = "";
+				let icon = "";
+
+				switch (prediction) {
+					case "High Proneness":
+						riskClass = "high-risk";
+						icon = "fas fa-exclamation-circle";
+						break;
+					case "Elevated Proneness":
+						riskClass = "elevated-risk";
+						icon = "fas fa-exclamation-triangle";
+						break;
+					case "Moderate Proneness":
+						riskClass = "moderate-risk";
+						icon = "fas fa-minus-circle";
+						break;
+					case "Low Proneness":
+						riskClass = "low-risk";
+						icon = "fas fa-check-circle";
+						break;
+					default:
+						riskClass = "minimal-risk";
+						icon = "fas fa-shield-alt";
+				}
+
+				predictionDiv.innerHTML = `
+                <div class="prediction-result ${riskClass}">
+                    <h3 class="mb-3">
+                        <i class="${icon} me-2"></i>
+                        Predicted Risk: ${prediction}
+                    </h3>
+                    <p class="mb-0">Based on the SVM model analysis of the provided symptoms and demographics.</p>
+                </div>
+            `;
+
+				// Show probabilities
+				let probabilitiesHtml =
+					'<h5 class="mb-3">Probability Distribution:</h5>';
+
+				// Sort probabilities by value
+				const sortedProbs = Object.entries(probabilities).sort(
+					(a, b) => b[1] - a[1]
+				);
+
+				sortedProbs.forEach(([className, probability]) => {
+					let barColor = "";
+					switch (className) {
+						case "High Proneness":
+							barColor = "bg-danger";
+							break;
+						case "Elevated Proneness":
+							barColor = "bg-warning";
+							break;
+						case "Moderate Proneness":
+							barColor = "bg-info";
+							break;
+						case "Low Proneness":
+							barColor = "bg-primary";
+							break;
+						default:
+							barColor = "bg-success";
+					}
+
+					probabilitiesHtml += `
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="fw-medium">${className}</span>
+                            <span class="fw-bold">${probability}%</span>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar ${barColor}" role="progressbar" 
+                                 style="width: ${probability}%" aria-valuenow="${probability}" 
+                                 aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                `;
+				});
+
+				probabilitiesDiv.innerHTML = probabilitiesHtml;
+				resultsDiv.style.display = "block";
+
+				// Scroll to results
+				resultsDiv.scrollIntoView({ behavior: "smooth" });
+			}
+
+			function showError(error) {
+				const resultsDiv = document.getElementById("results");
+				const predictionDiv = document.getElementById("prediction-result");
+
+				predictionDiv.innerHTML = `
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>Error:</strong> ${error}
+                </div>
+            `;
+
+				document.getElementById("probabilities-result").innerHTML = "";
+				resultsDiv.style.display = "block";
+			}
+		</script>
+	</body>
+</html>

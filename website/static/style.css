@@ -1,0 +1,285 @@
+/* Custom styles for Schizophrenia Prediction Website */
+
+:root {
+	--primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+	--success-gradient: linear-gradient(135deg, #1dd1a1 0%, #55a3ff 100%);
+	--warning-gradient: linear-gradient(135deg, #feca57 0%, #ff9ff3 100%);
+	--danger-gradient: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+	--info-gradient: linear-gradient(135deg, #48dbfb 0%, #0abde3 100%);
+}
+
+/* Animations */
+@keyframes fadeInUp {
+	from {
+		opacity: 0;
+		transform: translateY(30px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+@keyframes pulse {
+	0% {
+		transform: scale(1);
+	}
+	50% {
+		transform: scale(1.05);
+	}
+	100% {
+		transform: scale(1);
+	}
+}
+
+.fade-in-up {
+	animation: fadeInUp 0.6s ease-out;
+}
+
+/* Custom Button Styles */
+.btn-gradient {
+	background: var(--primary-gradient);
+	border: none;
+	color: white;
+	transition: all 0.3s ease;
+}
+
+.btn-gradient:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+	color: white;
+}
+
+/* Form Enhancements */
+.form-floating > .form-control {
+	border-radius: 12px;
+	border: 2px solid #e9ecef;
+}
+
+.form-floating > .form-control:focus {
+	border-color: #667eea;
+	box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+.form-floating > label {
+	color: #6c757d;
+}
+
+/* Progress Bar Animations */
+.progress-bar-animated {
+	animation: progress-bar-stripes 1s linear infinite;
+}
+
+@keyframes progress-bar-stripes {
+	0% {
+		background-position: 1rem 0;
+	}
+	100% {
+		background-position: 0 0;
+	}
+}
+
+/* Result Cards */
+.result-card {
+	border: none;
+	border-radius: 15px;
+	overflow: hidden;
+	transition: all 0.3s ease;
+}
+
+.result-card:hover {
+	transform: translateY(-5px);
+	box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+}
+
+/* Risk Level Indicators */
+.risk-indicator {
+	position: relative;
+	padding: 20px;
+	border-radius: 15px;
+	color: white;
+	text-align: center;
+	margin: 10px 0;
+}
+
+.risk-high {
+	background: var(--danger-gradient);
+}
+
+.risk-elevated {
+	background: var(--warning-gradient);
+}
+
+.risk-moderate {
+	background: var(--info-gradient);
+}
+
+.risk-low {
+	background: var(--success-gradient);
+}
+
+.risk-minimal {
+	background: var(--success-gradient);
+}
+
+/* Loading States */
+.loading-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(0, 0, 0, 0.5);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	z-index: 9999;
+}
+
+.loading-spinner {
+	width: 50px;
+	height: 50px;
+	border: 5px solid #f3f3f3;
+	border-top: 5px solid #667eea;
+	border-radius: 50%;
+	animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+	0% {
+		transform: rotate(0deg);
+	}
+	100% {
+		transform: rotate(360deg);
+	}
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+	.container {
+		padding: 10px;
+	}
+
+	.card {
+		margin: 10px 0;
+	}
+
+	.card-body {
+		padding: 20px 15px;
+	}
+
+	.display-6 {
+		font-size: 2rem;
+	}
+}
+
+/* Tooltip Enhancements */
+.tooltip {
+	font-size: 0.9rem;
+}
+
+.tooltip-inner {
+	background: var(--primary-gradient);
+	border-radius: 8px;
+	padding: 8px 12px;
+}
+
+/* Feature Info Styling */
+.feature-info {
+	font-size: 0.85rem;
+	color: #6c757d;
+	font-style: italic;
+	margin-top: 3px;
+}
+
+/* Navbar Enhancements */
+.navbar-brand {
+	font-weight: 600;
+	font-size: 1.3rem;
+}
+
+.nav-link {
+	font-weight: 500;
+	transition: all 0.3s ease;
+}
+
+.nav-link:hover {
+	color: #ffd700 !important;
+	transform: scale(1.05);
+}
+
+/* Card Header Gradients */
+.card-header-gradient {
+	background: var(--primary-gradient);
+	color: white;
+}
+
+/* Probability Bars */
+.probability-bar {
+	height: 30px;
+	border-radius: 15px;
+	background: #f8f9fa;
+	overflow: hidden;
+	margin: 8px 0;
+}
+
+.probability-fill {
+	height: 100%;
+	border-radius: 15px;
+	transition: width 0.8s ease-in-out;
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	padding-right: 15px;
+	color: white;
+	font-weight: 600;
+	font-size: 0.9rem;
+}
+
+/* Icon Enhancements */
+.icon-circle {
+	width: 50px;
+	height: 50px;
+	border-radius: 50%;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	margin-right: 15px;
+	font-size: 1.5rem;
+}
+
+/* Success/Error Messages */
+.alert-custom {
+	border: none;
+	border-radius: 12px;
+	padding: 15px 20px;
+}
+
+.alert-success-custom {
+	background: var(--success-gradient);
+	color: white;
+}
+
+.alert-danger-custom {
+	background: var(--danger-gradient);
+	color: white;
+}
+
+/* Print Styles */
+@media print {
+	.navbar,
+	.btn,
+	.loading,
+	.no-print {
+		display: none !important;
+	}
+
+	.container {
+		max-width: 100% !important;
+	}
+
+	.card {
+		box-shadow: none !important;
+		border: 1px solid #ddd !important;
+	}
+}
